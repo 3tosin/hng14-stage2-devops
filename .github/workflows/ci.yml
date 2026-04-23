@@ -47,3 +47,9 @@ jobs:
       - name: Test submit endpoint
         run: |
           curl -X POST http://localhost:3000/submit
+
+      - ⁠name: Run tests
+        run: pytest api
+
+     -  ⁠name: Integration test
+        run: bash test.sh

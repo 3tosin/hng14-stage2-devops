@@ -1,21 +1,26 @@
-FROM node:18-alpine
+# ---------- BUILD STAGE ----------
+FROM python:3.11-slim AS builder
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+
+# ---------- FINAL STAGE ----------
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install deps
-COPY package*.json ./
-RUN npm install --only=production
+# create non-root user
+RUN useradd -m appuser
 
-# Copy app
+# copy dependencies from builder
+COPY --from=builder /root/.local /root/.local
+
+# copy app
 COPY . .
+
+ENV PATH=/root/.local/bin:$PATH
 
 USER appuser
 
-EXPOSE 3000
-
-HEALTHCHECK CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
-
-CMD ["node", "app.js"]
+CMD ["python", "main.py"]

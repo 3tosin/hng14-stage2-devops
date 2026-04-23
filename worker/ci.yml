@@ -1,0 +1,13 @@
+- name: Lint Frontend
+    run: |
+    cd frontend
+    npm install
+    npx eslint .
+- name: Lint Dockerfiles
+  uses: hadolint/hadolint-action@v3.1.0
+
+- ⁠name: Scan image
+  uses: aquasecurity/trivy-action@master
+  with:
+    scan-type: fs
+    severity: CRITICAL,HIGH
